@@ -1,0 +1,70 @@
+# ============================================================
+#  源清单 —— 你唯一需要经常修改的文件
+# ============================================================
+#  修改说明：
+#   - 新增源：复制一段下面的配置，改 id / name / url 即可
+#   - 停用源：把 enabled 改成 false（不要删，方便以后恢复）
+#   - id 必须唯一，只能用英文字母、数字、连字符
+#   - 改完直接提交到 GitHub，下次运行时自动生效
+# ============================================================
+
+settings:
+  # 每次运行最多推送多少条（防止某天集中更新把你淹没）
+  max_items_per_run: 40
+  # 每次运行最多对多少条做 AI 摘要（控制费用，超出的只给标题+链接）
+  max_summary_per_run: 20
+  # 每个源最多取回多少条
+  max_items_per_source: 10
+  # 只推送最近 N 小时内发布的内容；微信源延迟大，建议 72
+  time_window_hours: 72
+
+sources:
+  # ---------- 类型一：RSS / Atom（最优先，能找到就用这个）----------
+  - id: example-rss
+    name: 示例机构公告
+    type: rss
+    url: https://example.com/feed.xml
+    enabled: false
+    keywords: []
+
+  # ---------- 类型二：JSON 接口（很多现代网站页面背后的数据接口）----------
+  # 如何找：浏览器打开目标页面 -> F12 -> Network -> Fetch/XHR，
+  #         找一个返回 JSON 的请求，把它的地址填到 url
+  - id: example-json
+    name: 示例数据接口
+    type: json
+    url: https://api.example.com/news?pageSize=20
+    enabled: false
+    # items_path：列表在 JSON 里的位置，用点号分隔；顶层列表就写 "."
+    items_path: data.list
+    title_key: title
+    url_key: url
+    date_key: publishTime
+    # 如果 url_key 取出来的是相对路径，用 url_prefix 补全
+    url_prefix: ""
+    keywords: []
+
+  # ---------- 类型三：网页抓取（网站既没 RSS 也没有 JSON 接口时用）----------
+  # 如何找选择器：浏览器打开页面 -> F12 -> 点左上角小箭头 -> 点中一条标题，
+  #               在 HTML 里右键 -> Copy -> Copy selector
+  - id: example-html
+    name: 示例网页公告
+    type: html
+    url: https://example.com/announcements
+    enabled: false
+    item_selector: "ul.news-list li"
+    title_selector: "a"
+    link_selector: "a"
+    link_attr: href
+    url_prefix: "https://example.com"
+    keywords: []
+
+  # ---------- 类型四：微信公众号（填转换服务输出的 feed 地址）----------
+  # 本质也是 RSS，单独列出只为方便管理。
+  # 微信通道的接入方式见 README「微信公众号接入」一节。
+  - id: wechat-demo
+    name: 公众号示例
+    type: rss
+    url: https://your-wechat-rss-host/feed/xxxx.xml
+    enabled: false
+    keywords: []
